@@ -2,7 +2,9 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 require('dotenv').config();
-// import mongoose schema model
+// import controller
+const controller = require('./controllers/controller');
+
 const ShortURL = require('./models/url')
 
 const port = process.env.PUBLIC_PORT || 3000;
@@ -11,30 +13,16 @@ app.use(express.urlencoded({extended: false}));
 app.set('view engine', 'ejs');
 app.set('views', __dirname+'/views');
 
-app.get('/', async (req, res) => {
-    const allData = await ShortURL.find();
-
-    res.render('index', {shortUrls: allData})
-});
+// homepage with shortened urls list
+app.get('/', controller.renderHomePage);
 
 
-app.post('/short', async (req, res) => {
-    const fullUrl = req.body.fullUrl;
-
-    const record = new ShortURL({
-        full: fullUrl
-    });
-
-    await record.save();
-
-    res.redirect('/')
-});
+// save shortened url to DB
+app.post('/short', controller.urlShortener);
 
 
-
-app.get('/short', (req, res) => {
-    res.send('Hello from short');
-});
+// redirect user to orginal url when click(request) on shortened url
+app.get('/:shortid', controller.redirectToURL);
 
 
 
@@ -45,5 +33,6 @@ mongoose.connect(process.env.MONGODB_URI, {
 })
 .catch(err => console.log(`OOPS unable to connect to mongodb because ${err.reson}`));
 
+mongoose.connection.on('connected', () => console.log('connected to mongoDb'))
 
-app.listen(port, () => console.log(`listening at port ${port}`))
+app.listen(port, () => console.log(`Server listening at port ${port}`))
