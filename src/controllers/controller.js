@@ -23,7 +23,7 @@ exports.urlShortener = async (req, res) => {
     res.redirect('/');
 }
 
-
+// redirect user to original url if found in db
 exports.redirectToURL = async (req, res) => {
     const shortid = req.params.shortid;
 

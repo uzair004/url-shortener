@@ -5,21 +5,18 @@ require('dotenv').config();
 // import controller
 const controller = require('./controllers/controller');
 
-const ShortURL = require('./models/url')
-
 const port = process.env.PUBLIC_PORT || 3000;
 app.use(express.urlencoded({extended: false}));
 // setting view engine
 app.set('view engine', 'ejs');
 app.set('views', __dirname+'/views');
 
+// ROUTES
 // homepage with shortened urls list
 app.get('/', controller.renderHomePage);
 
-
 // save shortened url to DB
 app.post('/short', controller.urlShortener);
-
 
 // redirect user to orginal url when click(request) on shortened url
 app.get('/:shortid', controller.redirectToURL);
